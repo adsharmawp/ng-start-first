@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../scripts/angular-1.5.5.js"></script>
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('myController', function ($scope, $http) {
+            var promise = $http.get("L0-Expression.html");
+            promise.then(function (response) {
+                $scope.result = response.data;
+            });
+
+            //------------------------------------------
+            OnUserCallComplete = function (response) {
+                $scope.user = response.data;
+            }
+            $http.get("https://api.github.com/users/robconery")
+                 .then(OnUserCallComplete);
+        });
+
+
+    </script>
+</head>
+<body ng-app="myApp" ng-controller="myController">
+    Getting data from diffrent page (L0-Expression.html):<br/>
+    {{ result }}
+    <hr />
+    <div>
+        User: {{ user.name }}<br />
+        Name: {{ user.location }}<br />
+        <img ng-src="{{user.avatar_url}}" />
+    </div>
+</body>
+</html>

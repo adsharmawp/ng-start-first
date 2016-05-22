@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../scripts/angular-1.5.5.js"></script>
+    <script>
+        (function () {
+            var app = angular.module('myApp', []);
+            var myController = function ($scope) {
+                $scope.firstName = 'Akash';
+                $scope.lastName = 'Sharma';
+
+                $scope.logoUrl = 'https://angularjs.org/img/AngularJS-large.png';
+            };
+            app.controller("myController", ['$scope', myController]);
+        }());
+    </script>
+</head>
+<body ng-app="myApp" ng-controller="myController">
+    Name: {{ firstName }} {{ lastName }}<br />
+    First Name Length: {{ firstName.length }}<br />
+    Last Name Length: {{ lastName.length }}<br />
+    <img ng-src="{{ logoUrl }}" />
+</body>
+</html>

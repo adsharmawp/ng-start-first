@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <script src="../scripts/angular-1.5.5.js"></script>
+    <script>
+        (function () {
+            var app = angular.module('myApp', []);
+            var myController = function ($scope, $http, $interval, $log) {
+                $scope.requestPending = true;
+
+                OnUserCallComplete = function (response) {
+                    $scope.user = response.data;
+                    $scope.requestPending = true;
+
+                    $http.get($scope.user.repos_url)
+                        .then(function(response){
+                            $scope.user.repos = response.data;
+                        });
+                }
+
+                $scope.search = function () {
+                    $scope.requestPending = false;
+                    $log.info("Searching for user...");
+                    var url = "https://api.github.com/users/" + $scope.userName;
+                    $http.get(url)
+                     .then(OnUserCallComplete);
+                    if (countDownInterval)
+                        $interval.cancel(countDownInterval);
+                };
+                
+                // Interval service use
+                $scope.countdown = 5;
+                var decrementCount = function () {
+                    $scope.countdown -= 1;
+                    if ($scope.countdown < 1) {
+                        $scope.userName = 'adsharmawp';
+                        $scope.search();
+                    }
+                };
+                var countDownInterval = $interval(decrementCount, 1000, $scope.countdown);
+            };
+            app.controller("myController", ['$scope', '$http', '$interval', '$log', myController]);
+        }());
+    </script>
+</head>
+<body ng-app="myApp" ng-controller="myController">
+    <form name="searchUser">
+        <input type="search" ng-model="userName" placeholder="Username to find" />
+        <input type="submit" value="Search" ng-click="search()" />
+        (Hint: robconery, adsharmawp)<br />
+        You are searching for: {{userName}}<br />
+        Request Pending : {{requestPending}}<br />
+        Pending Time: {{ countdown }}
+    </form>
+    <hr />
+    <div>
+        User: {{ user.name }}<br />
+        Location: {{ user.location }}
+    </div>
+    <hr />
+    Order:
+    <select ng-model="repoSortOrder">
+        <option value="name">Name</option>
+        <option value="-size">Stars</option>
+        <option value="language">Language</option>
+    </select>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Starts</th>
+                <th>Language</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="repo in user.repos | orderBy:repoSortOrder">
+                <td>{{repo.name}}</td>
+                <td>{{repo.size | number}}</td>
+                <td>{{repo.language}}</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
